@@ -1,4 +1,4 @@
-pipeline{
+/* pipeline{
 
 agent any
 
@@ -72,4 +72,34 @@ post{
 }
 
 
-}//Pipeline closing
+}//Pipeline closing   */
+
+
+node {
+ def mavenpack=tool name:"maven-3.9"
+ echo "the job name is :$job_name"
+ echo "the current build number is :$Build_number"
+    stage ('checkout from git'){
+        git credentialsId: '899e5961-ee41-488f-916d-8daf46130a81', url: 'https://github.com/smartdevops-377/maven-web-application-new.git'
+    }
+    stage('build'){
+        
+        sh "${mavenpack}/bin/mvn clean package"
+    }
+    stage('codecoverage'){
+        jacoco()
+    }
+   //stage('execute sonar report'){
+     //   withSonarQubeEnv('sonarqubeserver'){
+     //   sh "${mavenpack}/bin/mvn sonar:sonar"
+   // } 
+  //  }  */
+    //stage('pushing the artifact'){
+    //    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'target/maven-web-application', type: 'war']], credentialsId: '8fdd9691-abb2-457b-9a3f-a0af71a04123', groupId: 'nexususer', nexusUrl: '34.44.182.12:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'http://34.44.182.12:8081/repository/maven-web-application/', version: '0.0.1-SNAPSHOT'
+    //}
+
+}
+
+
+    
+
