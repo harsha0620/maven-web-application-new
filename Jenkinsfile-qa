@@ -1,0 +1,104 @@
+/* pipeline{
+
+agent any
+
+tools{
+maven 'maven3.8.2'
+
+}
+
+triggers{
+pollSCM('* * * * *')
+}
+
+options{
+timestamps()
+buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5'))
+}
+
+stages{
+
+  stage('CheckOutCode'){
+    steps{
+    git branch: 'development', credentialsId: '957b543e-6f77-4cef-9aec-82e9b0230975', url: 'https://github.com/devopstrainingblr/maven-web-application-1.git'
+	
+	}
+  }
+  
+  stage('Build'){
+  steps{
+  sh  "mvn clean package"
+  }
+  }
+/*
+ stage('ExecuteSonarQubeReport'){
+  steps{
+  sh  "mvn clean sonar:sonar"
+  }
+  }
+  
+  stage('UploadArtifactsIntoNexus'){
+  steps{
+  sh  "mvn clean deploy"
+  }
+  }
+  
+  stage('DeployAppIntoTomcat'){
+  steps{
+  sshagent(['bfe1b3c1-c29b-4a4d-b97a-c068b7748cd0']) {
+   sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@35.154.190.162:/opt/apache-tomcat-9.0.50/webapps/"    
+  }
+  }
+  }
+  */
+}//Stages Closing
+
+post{
+
+ success{
+ emailext to: 'devopstrainingblr@gmail.com,mithuntechnologies@yahoo.com',
+          subject: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          body: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          replyTo: 'devopstrainingblr@gmail.com'
+ }
+ 
+ failure{
+ emailext to: 'devopstrainingblr@gmail.com,mithuntechnologies@yahoo.com',
+          subject: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          body: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
+          replyTo: 'devopstrainingblr@gmail.com'
+ }
+ 
+}
+
+
+}//Pipeline closing   */
+
+
+node {
+ def mavenpack=tool name:"maven-3.9"
+ echo "the job name is :$job_name"
+ echo "the current build number is :$Build_number"
+    stage ('checkout from git'){
+        git credentialsId: '899e5961-ee41-488f-916d-8daf46130a81', url: 'https://github.com/smartdevops-377/maven-web-application-new.git'
+    }
+    stage('build'){
+        
+        sh "${mavenpack}/bin/mvn clean package"
+    }
+    stage('codecoverage'){
+        jacoco()
+    }
+   //stage('execute sonar report'){
+     //   withSonarQubeEnv('sonarqubeserver'){
+     //   sh "${mavenpack}/bin/mvn sonar:sonar"
+   // } 
+  //  }  */
+    //stage('pushing the artifact'){
+    //    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'target/maven-web-application', type: 'war']], credentialsId: '8fdd9691-abb2-457b-9a3f-a0af71a04123', groupId: 'nexususer', nexusUrl: '34.44.182.12:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'http://34.44.182.12:8081/repository/maven-web-application/', version: '0.0.1-SNAPSHOT'
+    //}
+
+}
+
+
+    
