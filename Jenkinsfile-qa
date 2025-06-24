@@ -76,28 +76,46 @@ post{
 
 
 node {
- def mavenpack=tool name:"maven-3.9"
- echo "the job name is :$job_name"
- echo "the current build number is :$Build_number"
-    stage ('checkout from git'){
-        git credentialsId: '899e5961-ee41-488f-916d-8daf46130a81', url: 'https://github.com/smartdevops-377/maven-web-application-new.git'
+            def mavenHome = tool name: "maven-3.9.10"
+     echo "the job name is $job_name"
+     echo "the current build number is:$build_number "
+    stage("Checkout from Git") {
+        git branch: 'main', credentialsId: '264d3b9f-b903-49d4-abb0-07e1c52aaa45', url: 'https://github.com/harsha0620/maven-web-application.git'
     }
-    stage('build'){
-        
-        sh "${mavenpack}/bin/mvn clean package"
+
+    stage("Build") {
+        sh "${mavenHome}/bin/mvn clean package"
     }
-    stage('codecoverage'){
+
+    stage("Code Coverage") {
         jacoco()
     }
-   //stage('execute sonar report'){
-     //   withSonarQubeEnv('sonarqubeserver'){
-     //   sh "${mavenpack}/bin/mvn sonar:sonar"
-   // } 
-  //  }  */
-    //stage('pushing the artifact'){
-    //    nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: 'target/maven-web-application', type: 'war']], credentialsId: '8fdd9691-abb2-457b-9a3f-a0af71a04123', groupId: 'nexususer', nexusUrl: '34.44.182.12:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'http://34.44.182.12:8081/repository/maven-web-application/', version: '0.0.1-SNAPSHOT'
-    //}
 
+    /*
+    stage("Execute Sonar Report") {
+        withSonarQubeEnv("sonarqubeserver") {
+            sh "${mavenHome}/bin/mvn sonar:sonar"
+        }
+    }
+
+    stage("Push Artifact to Nexus") {
+        nexusArtifactUploader(
+            artifacts: [[
+                artifactId: 'maven-web-app',
+                classifier: '',
+                file: 'target/maven-web-app.war',
+                type: 'war'
+            ]],
+            credentialsId: 'fcbfa5aa-9d63-4ec0-a75d-94c0d70bf5d2',
+            groupId: 'neususer',
+            nexusUrl: '34.172.209.178:8081',
+            nexusVersion: 'nexus2',
+            protocol: 'http',
+            repository: 'maven-web-application',
+            version: '1.0-SNAPSHOT'
+        )
+    }
+    */
 }
 
 
